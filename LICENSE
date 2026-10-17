@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
--------------------------------------------------------------------------------
-Third-party notice
-
-springapp/src/main/resources/spelling/en_US_words.txt.gz is derived from SCOWL
-(Spell Checker Oriented Word Lists), Copyright 2000-2011 by Kevin Atkinson, and
-is distributed under its own permissive license, reproduced in
-springapp/src/main/resources/spelling/NOTICE-SCOWL.txt.
