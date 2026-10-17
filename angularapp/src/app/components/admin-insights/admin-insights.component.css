@@ -1,0 +1,30 @@
+.left {
+  text-align: left;
+}
+
+.count {
+  display: inline-block;
+  min-width: 34px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef1f5;
+  font-weight: 600;
+}
+
+.count.alert {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.count.warn {
+  background: #fff4e0;
+  color: #9a5b00;
+}
+
+.row-skeleton {
+  height: 120px;
+}
+
+.modal-wide {
+  max-width: 760px;
+}

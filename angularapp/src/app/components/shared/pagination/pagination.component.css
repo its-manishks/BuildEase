@@ -1,0 +1,67 @@
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+    font-size: 0.88rem;
+  }
+  
+  .pager-summary {
+    margin: 0;
+    color: var(--be-muted);
+  }
+  
+  .pager-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  
+  .pager-button {
+    min-width: 36px;
+    padding: 6px 10px;
+    border: 1px solid var(--be-border);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--be-text);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  
+  .pager-button:hover:not(:disabled) {
+    border-color: var(--be-blue);
+    color: var(--be-blue-dark);
+  }
+  
+  .pager-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  
+  .pager-number.active {
+    border-color: var(--be-blue);
+    background: var(--be-blue);
+    color: #ffffff;
+  }
+  
+  .pager-gap {
+    padding: 0 4px;
+    color: var(--be-muted);
+  }
+  
+  .pager-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--be-muted);
+  }
+  
+  .pager-size select {
+    padding: 5px 8px;
+    border: 1px solid var(--be-border);
+    border-radius: 8px;
+    font-family: inherit;
+  }

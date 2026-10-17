@@ -1,0 +1,47 @@
+<div class="modal-backdrop">
+  <div class="modal-box otp-box" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
+    <button *ngIf="!completed" type="button" class="modal-close" aria-label="Verify later" (click)="close()">&times;</button>
+
+    <ng-container *ngIf="!completed; else done">
+      <h3 id="otpTitle" class="modal-title">Verify your account</h3>
+      <p class="otp-intro">{{ introText }}</p>
+
+      <p class="dev-banner" *ngIf="devMode" role="note">
+        Test mode: codes are shown here because real email/SMS delivery is switched off.
+      </p>
+
+      <section class="otp-channel" *ngFor="let state of channels" [class.is-verified]="state.verified">
+        <div class="otp-head">
+          <h4>{{ state.label }}<span class="otp-target"> · {{ state.target }}</span></h4>
+          <span *ngIf="state.verified" class="chip chip-approved">Verified</span>
+        </div>
+
+        <ng-container *ngIf="!state.verified">
+          <p class="dev-code" *ngIf="state.devCode">Code: <strong>{{ state.devCode }}</strong></p>
+          <div class="otp-row">
+            <label class="sr-only" [attr.for]="'otp-' + state.channel">{{ state.label }} code</label>
+            <input [id]="'otp-' + state.channel" class="otp-input" type="text" inputmode="numeric" maxlength="6"
+                   autocomplete="one-time-code" placeholder="••••••" [(ngModel)]="state.code"
+                   (keyup.enter)="verify(state)">
+            <button type="button" class="btn btn-primary" [disabled]="state.busy" (click)="verify(state)">Verify</button>
+          </div>
+          <div class="error-text" *ngIf="state.error" role="alert">{{ state.error }}</div>
+          <button type="button" class="resend" [disabled]="state.cooldown > 0 || state.busy" (click)="resend(state)">
+            {{ state.cooldown > 0 ? 'Resend in ' + state.cooldown + 's' : 'Resend code' }}
+          </button>
+        </ng-container>
+      </section>
+
+      <button type="button" class="later" (click)="close()">Verify later</button>
+    </ng-container>
+
+    <ng-template #done>
+      <div class="otp-done">
+        <span class="done-mark" aria-hidden="true">&#10003;</span>
+        <h3 class="modal-title">You're all set</h3>
+        <p>Your email and mobile number are verified.</p>
+        <button type="button" class="btn btn-success" (click)="finish()">Continue</button>
+      </div>
+    </ng-template>
+  </div>
+</div>

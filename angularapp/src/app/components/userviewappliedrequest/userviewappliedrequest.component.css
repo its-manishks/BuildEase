@@ -1,0 +1,133 @@
+.list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.user-title {
+  margin: 0;
+  color: #2f6f9f;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--be-border);
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-chip.active {
+  border-color: var(--be-blue);
+  background: var(--be-blue);
+  color: #ffffff;
+}
+
+.request-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 0;
+}
+
+.thumb {
+  display: inline-flex;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.thumb-empty {
+  background: linear-gradient(135deg, #e7f0fd, #f3e8ff);
+  color: #5b2a86;
+  font-weight: 700;
+}
+
+.request-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.line span {
+  color: var(--be-muted);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px 12px;
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+
+.details dt {
+  font-weight: 600;
+  color: var(--be-muted);
+}
+
+.details dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+.note {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: var(--be-muted);
+}
+
+/* Step 5 (Somaan): decision timeline in the details dialog */
+.timeline {
+  margin: 4px 0 8px;
+  padding-left: 18px;
+  font-size: 0.86rem;
+}
+
+.timeline-note {
+  display: block;
+  color: var(--be-muted);
+}
+
+/* Edit quantity dialog */
+.edit-sub,
+.edit-hint {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  color: var(--be-muted);
+}
+
+.edit-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.edit-hint {
+  margin-top: 6px;
+}

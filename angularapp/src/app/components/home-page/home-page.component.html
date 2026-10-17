@@ -1,0 +1,36 @@
+<section class="hero" aria-label="BuildEase">
+  <div class="hero-overlay">
+    <h1>BuildEase</h1>
+    <p>Your trusted partner in construction materials</p>
+  </div>
+</section>
+
+<section class="welcome-card">
+  <h2>Welcome to BuildEase</h2>
+  <p>
+    Simplify your construction needs with BuildEase. We offer a comprehensive range of building
+    materials, from cement and steel to wood and bricks, ensuring quality and timely delivery for
+    your projects.
+  </p>
+</section>
+
+<!-- Step 6 (Jeevasri): the user's live summary -->
+<section class="home-summary" *ngIf="isUser && summary" aria-label="Your summary">
+  <a class="summary-card" routerLink="/user/requests"><strong>{{ summary.totalRequests }}</strong><span>Requests</span></a>
+  <a class="summary-card" routerLink="/user/requests"><strong>{{ summary.pendingRequests }}</strong><span>Pending</span></a>
+  <a class="summary-card" routerLink="/user/requests"><strong>{{ summary.shippedRequests }}</strong><span>Shipped</span></a>
+  <a class="summary-card highlight" routerLink="/user/feedbacks"><strong>{{ summary.awaitingReview }}</strong><span>Ready to review</span></a>
+</section>
+
+<!-- Step 4 (Anuj): previous orders carousel for Users -->
+<section class="home-orders" *ngIf="isUser">
+  <app-previous-orders-carousel></app-previous-orders-carousel>
+</section>
+
+<hr class="home-divider">
+
+<section class="contact-card" aria-labelledby="contactTitle">
+  <h3 id="contactTitle">Contact Us</h3>
+  <p><span aria-hidden="true">📞</span> Phone: {{ contactPhone }}</p>
+  <p><span aria-hidden="true">📧</span> Email: {{ contactEmail }}</p>
+</section>

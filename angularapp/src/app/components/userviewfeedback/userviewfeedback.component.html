@@ -1,0 +1,61 @@
+<div class="page-container">
+  <section class="ready" *ngIf="awaiting.length" aria-labelledby="readyTitle">
+    <h2 id="readyTitle" class="section-title">Ready to review</h2>
+    <p class="sub">You received these materials. Tell others what you think.</p>
+    <div class="ready-row">
+      <article class="ready-item" *ngFor="let item of awaiting">
+        <img *ngIf="awaitingImage(item) as src; else noImage" [src]="src" [alt]="item.materialName" class="thumb">
+        <ng-template #noImage><span class="thumb thumb-empty" aria-hidden="true">{{ item.materialName.charAt(0) }}</span></ng-template>
+        <div class="ready-text"><strong>{{ item.materialName }}</strong><span class="sub">{{ item.category }}</span></div>
+        <button type="button" class="btn btn-success" (click)="writeReview(item)">Write a Review</button>
+      </article>
+    </div>
+  </section>
+
+  <h2 class="page-title user-title">My Feedbacks</h2>
+
+  <div class="error-text" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+  <div class="card-grid" *ngIf="isLoading">
+    <div class="skeleton skeleton-card" *ngFor="let placeholder of [1, 2, 3]"></div>
+  </div>
+
+  <div class="empty-panel" *ngIf="!isLoading && result?.content?.length === 0">
+    <h3>No Feedbacks Found</h3>
+    <p>Reviews you write for delivered materials appear here.</p>
+  </div>
+
+  <div class="card-grid" *ngIf="!isLoading && result?.content?.length">
+    <article class="item-card review" *ngFor="let feedback of result?.content; trackBy: trackById">
+      <div class="review-top">
+        <img *ngIf="reviewImage(feedback) as src; else noReviewImage" [src]="src" [alt]="feedback.material?.materialName" class="thumb">
+        <ng-template #noReviewImage><span class="thumb thumb-empty" aria-hidden="true">{{ (feedback.material?.materialName || '?').charAt(0) }}</span></ng-template>
+        <div>
+          <h3 class="item-card-title">{{ feedback.material?.materialName || 'General feedback' }}</h3>
+          <app-star-rating [rating]="feedback.rating" [readonly]="true" size="sm"></app-star-rating>
+        </div>
+      </div>
+      <div class="item-card-body">
+        <p class="meta"><span class="chip chip-shipped">{{ feedback.category }}</span> {{ feedback.date | date: 'dd MMM yyyy' }}</p>
+        <p class="text">{{ feedback.feedbackText }}</p>
+        <div class="item-card-actions">
+          <button type="button" class="btn btn-danger" (click)="feedbackToDelete = feedback">Delete</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                  [totalElements]="result.totalElements" [size]="result.size"
+                  (pageChange)="goToPage($event)"></app-pagination>
+</div>
+
+<div class="modal-backdrop" *ngIf="feedbackToDelete">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="deleteFeedbackText">
+    <p id="deleteFeedbackText">Delete your review of <strong>{{ feedbackToDelete.material?.materialName || 'this material' }}</strong>?</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-danger" [disabled]="isDeleting" (click)="confirmDelete()">Yes, Delete</button>
+      <button type="button" class="btn btn-secondary" (click)="feedbackToDelete = null">Cancel</button>
+    </div>
+  </div>
+</div>

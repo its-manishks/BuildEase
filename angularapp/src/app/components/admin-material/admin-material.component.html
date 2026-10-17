@@ -1,0 +1,96 @@
+<div class="form-card material-form-card">
+  <button *ngIf="isEditMode" id="backButton" type="button" class="btn btn-primary back-button" (click)="goBack()">Back</button>
+
+  <h2 class="form-title">{{ isEditMode ? 'Edit Material' : 'Create New Material' }}</h2>
+
+  <div *ngIf="isLoading" class="skeleton form-skeleton" aria-label="Loading material"></div>
+
+  <div class="archived-banner" *ngIf="existing?.active === false">
+    This material is archived and hidden from the catalogue.
+    <label><input type="checkbox" [(ngModel)]="restoreArchived" [ngModelOptions]="{ standalone: true }"> Restore it when saving</label>
+  </div>
+
+  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" novalidate [hidden]="isLoading">
+    <div class="form-group">
+      <label for="materialName">Material Name<span class="required">*</span></label>
+      <input id="materialName" type="text" class="form-control" formControlName="materialName">
+      <div class="error-text" *ngIf="showError('materialName', 'required')">*Material Name is required</div>
+      <div class="error-text" *ngIf="showError('materialName', 'maxlength')">*At most 100 characters</div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description<span class="required">*</span></label>
+      <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+      <div class="error-text" *ngIf="showError('description', 'required')">*Description is required</div>
+      <div class="error-text" *ngIf="showError('description', 'maxlength')">*At most 1000 characters</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="category">Category<span class="required">*</span></label>
+        <select id="category" class="form-control" formControlName="category">
+          <option value="" disabled>Select Category</option>
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+        <div class="error-text" *ngIf="showError('category', 'required')">*Category is required</div>
+      </div>
+      <div class="form-group">
+        <label for="unitType">Unit Type<span class="required">*</span></label>
+        <select id="unitType" class="form-control" formControlName="unitType">
+          <option value="" disabled>Select Unit Type</option>
+          <option *ngFor="let unit of unitTypes" [value]="unit.value">{{ unit.label }}</option>
+        </select>
+        <div class="error-text" *ngIf="showError('unitType', 'required')">*Unit Type is required</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="pricePerUnit">Price Per Unit (₹)<span class="required">*</span></label>
+        <input id="pricePerUnit" type="number" min="0.01" step="0.01" class="form-control" formControlName="pricePerUnit">
+        <div class="error-text" *ngIf="showError('pricePerUnit', 'required')">*Price Per Unit is required</div>
+        <div class="error-text" *ngIf="showError('pricePerUnit', 'min')">*Must be greater than 0</div>
+        <div class="error-text" *ngIf="showError('pricePerUnit', 'max')">*Too large</div>
+      </div>
+      <div class="form-group">
+        <label for="quantity">{{ isEditMode ? 'Current Stock' : 'Initial Quantity' }}<span *ngIf="!isEditMode" class="required">*</span></label>
+        <input id="quantity" type="number" min="0" step="1" class="form-control" formControlName="quantity">
+        <p class="hint" *ngIf="isEditMode">Change stock with “Restock” on the materials list.</p>
+        <div class="error-text" *ngIf="showError('quantity', 'required')">*Initial quantity is required</div>
+        <div class="error-text" *ngIf="showError('quantity', 'min') || showError('quantity', 'pattern')">*Whole number, 0 or more</div>
+        <div class="error-text" *ngIf="showError('quantity', 'max')">*At most 10,00,000</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="materialImage">Image (JPG, max 2 MB)</label>
+      <div class="image-row">
+        <img *ngIf="currentImage" [src]="currentImage" alt="Material image preview" class="image-preview">
+        <input id="materialImage" type="file" accept=".jpg,.jpeg,image/jpeg" (change)="onImageSelected($event)">
+      </div>
+      <div class="error-text" *ngIf="imageError">{{ imageError }}</div>
+    </div>
+
+    <div class="error-text form-message" *ngIf="submitted && materialForm.invalid">*All fields are required.</div>
+    <div class="error-text form-message" *ngIf="errorMessage" role="alert">
+      {{ errorMessage }}
+      <button *ngIf="staleVersion" type="button" class="link-button" (click)="reload()">Reload</button>
+    </div>
+
+    <div class="form-actions">
+      <button id="submitMaterial" type="submit" class="submit-button" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Saving...' : (isEditMode ? 'Update Material' : 'Add Material') }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="modal-backdrop" *ngIf="showSuccessModal">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="materialSuccessText">
+    <p id="materialSuccessText">{{ successMessage }}</p>
+    <p class="hint" *ngIf="successNote">{{ successNote }}</p>
+    <div class="modal-actions">
+      <button type="button" class="submit-button" (click)="onSuccessOk()">Ok</button>
+    </div>
+  </div>
+</div>

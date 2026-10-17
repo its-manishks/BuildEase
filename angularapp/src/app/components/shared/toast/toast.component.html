@@ -1,0 +1,8 @@
+<div class="toast-stack" aria-live="polite">
+    <div *ngFor="let toast of toasts$ | async; trackBy: trackById" class="toast" [ngClass]="'toast-' + toast.type"
+         role="status">
+      <span class="toast-mark" aria-hidden="true"></span>
+      <p class="toast-text">{{ toast.message }}</p>
+      <button type="button" class="toast-close" aria-label="Dismiss notification" (click)="dismiss(toast.id)">&times;</button>
+    </div>
+  </div>

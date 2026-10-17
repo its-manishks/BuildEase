@@ -1,0 +1,23 @@
+<nav class="pager" *ngIf="totalElements > 0" aria-label="Pagination">
+    <p class="pager-summary">Showing {{ firstItem }}–{{ lastItem }} of {{ totalElements }}</p>
+  
+    <div class="pager-controls" *ngIf="totalPages > 1">
+      <button type="button" class="pager-button" [disabled]="page === 0" (click)="goTo(page - 1)"
+              aria-label="Previous page">&lsaquo; Prev</button>
+      <ng-container *ngFor="let item of pages">
+        <span *ngIf="item === null" class="pager-gap" aria-hidden="true">…</span>
+        <button *ngIf="item !== null" type="button" class="pager-button pager-number"
+                [class.active]="item === page" [attr.aria-current]="item === page ? 'page' : null"
+                (click)="goTo(item)">{{ item + 1 }}</button>
+      </ng-container>
+      <button type="button" class="pager-button" [disabled]="page >= totalPages - 1" (click)="goTo(page + 1)"
+              aria-label="Next page">Next &rsaquo;</button>
+    </div>
+  
+    <label class="pager-size" *ngIf="showPageSize">
+      Per page
+      <select [value]="size" (change)="onSizeChange($any($event.target).value)">
+        <option *ngFor="let option of pageSizeOptions" [value]="option">{{ option }}</option>
+      </select>
+    </label>
+  </nav>

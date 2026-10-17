@@ -1,0 +1,112 @@
+.back-link {
+  margin-bottom: 14px;
+  border-radius: 8px;
+}
+
+.request-skeleton {
+  height: 420px;
+}
+
+.request-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.summary-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e7f0fd, #f3e8ff);
+  color: #5b2a86;
+  font-size: 2.6rem;
+  font-weight: 700;
+}
+
+.summary-title {
+  margin: 12px 0 2px;
+  font-size: 1.2rem;
+}
+
+.summary-meta,
+.summary-desc,
+.hint {
+  margin: 0 0 8px;
+  color: var(--be-muted);
+  font-size: 0.85rem;
+}
+
+.summary-price {
+  margin: 0 0 8px;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.summary-price span {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--be-muted);
+}
+
+.summary-desc {
+  margin-top: 10px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.unavailable {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f4f7fb;
+}
+
+.total-row strong {
+  font-size: 1.15rem;
+}
+
+.form-message {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.submit-wide {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+  .request-layout,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+/* Final phase: wider success dialog when suggestions are shown */
+.modal-suggest {
+  width: min(760px, calc(100vw - 32px));
+  max-height: 90vh;
+  overflow-y: auto;
+}

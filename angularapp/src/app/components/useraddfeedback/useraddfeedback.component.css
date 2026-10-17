@@ -1,0 +1,121 @@
+.review-card {
+  max-width: 560px;
+}
+
+.review-skeleton {
+  height: 300px;
+}
+
+.material-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f4f7fb;
+}
+
+.thumb {
+  display: inline-flex;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.thumb-empty {
+  background: linear-gradient(135deg, #e7f0fd, #f3e8ff);
+  color: #5b2a86;
+  font-weight: 700;
+}
+
+.sub {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--be-muted);
+}
+
+.counter {
+  margin: 4px 0 0;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--be-muted);
+}
+
+.form-message {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.wide {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+}
+/* Final phase: spelling suggestions and "Improve wording" */
+.spelling {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.82rem;
+}
+
+.spelling-label {
+  color: var(--be-muted);
+}
+
+.spelling-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff4e5;
+}
+
+.link-btn {
+  padding: 0 3px;
+  border: none;
+  background: none;
+  color: var(--be-blue-dark, #1565c0);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.link-btn.muted {
+  color: var(--be-muted);
+  font-weight: 400;
+}
+
+.improve {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-small {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+.improve-box {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #eef6ee;
+}
+
+.improve-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.improve-text {
+  margin: 4px 0 8px;
+  white-space: pre-line;
+}

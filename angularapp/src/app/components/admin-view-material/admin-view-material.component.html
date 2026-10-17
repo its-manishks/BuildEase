@@ -1,0 +1,111 @@
+<div class="page-container">
+  <div class="page-card">
+    <div class="list-head">
+      <h2 class="page-title">Materials</h2>
+      <a class="btn btn-primary" routerLink="/admin/material/add">+ Add Material</a>
+    </div>
+    <div class="title-divider"></div>
+
+    <div class="toolbar">
+      <input id="searchMaterial" type="search" class="search-input" placeholder="Search name or description..."
+             [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)" aria-label="Search materials">
+      <div class="filters">
+        <select id="categoryFilter" class="filter-select" [(ngModel)]="query.category" (change)="applyFilters()"
+                aria-label="Filter by category">
+          <option [ngValue]="undefined">All Categories</option>
+          <option *ngFor="let category of categories" [ngValue]="category">{{ category }}</option>
+        </select>
+        <select class="filter-select" [(ngModel)]="query.sort" (change)="applyFilters()" aria-label="Sort by">
+          <option value="name">Name A–Z</option>
+          <option value="price">Price: low to high</option>
+          <option value="price_desc">Price: high to low</option>
+          <option value="stock">Most stock</option>
+          <option value="newest">Newest</option>
+        </select>
+        <label class="check"><input type="checkbox" [(ngModel)]="query.inStockOnly" (change)="applyFilters()"> In stock only</label>
+        <label class="check"><input type="checkbox" [(ngModel)]="query.includeArchived" (change)="applyFilters()"> Show archived</label>
+      </div>
+    </div>
+
+    <div class="alert-error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Material</th>
+            <th>Category</th>
+            <th>Price / Unit</th>
+            <th>Stock</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="6"><div class="skeleton row-skeleton"></div></td>
+          </tr>
+          <tr *ngIf="!isLoading && result?.content?.length === 0">
+            <td colspan="6" class="empty-state">Oops! No records found</td>
+          </tr>
+          <ng-container *ngIf="!isLoading && result">
+            <tr *ngFor="let material of result.content; trackBy: trackById" [class.archived]="material.active === false">
+              <td>
+                <img *ngIf="imageSrc(material) as src; else noImage" [src]="src" [alt]="material.materialName" class="thumb">
+                <ng-template #noImage><span class="thumb thumb-empty" aria-hidden="true">{{ material.materialName.charAt(0) }}</span></ng-template>
+              </td>
+              <td class="name-cell">
+                <strong>{{ material.materialName }}</strong>
+                <span class="desc">{{ material.description }}</span>
+              </td>
+              <td>{{ material.category }}</td>
+              <td>₹{{ material.pricePerUnit | number: '1.0-2' }} / {{ material.unitType }}</td>
+              <td>
+                <div class="stock-cell">
+                  <strong>{{ material.quantity ?? 0 }}</strong>
+                  <span class="stock-badge" [ngClass]="badge(material).css">{{ badge(material).label }}</span>
+                </div>
+              </td>
+              <td class="action-cell">
+                <button type="button" class="btn btn-success" (click)="editMaterial(material)">Edit</button>
+                <button type="button" class="btn btn-info" (click)="openRestock(material)">Restock</button>
+                <button type="button" class="btn btn-danger" (click)="openDeleteModal(material)">Delete</button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                    [totalElements]="result.totalElements" [size]="result.size" [showPageSize]="true"
+                    (pageChange)="goToPage($event)" (sizeChange)="changeSize($event)"></app-pagination>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="restockTarget">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="restockTitle">
+    <h3 id="restockTitle" class="modal-title">Restock {{ restockTarget.materialName }}</h3>
+    <p class="hint">Current stock: <strong>{{ restockTarget.quantity ?? 0 }} {{ restockTarget.unitType }}</strong>.
+      Enter units to add, or a negative number to remove.</p>
+    <label class="sr-only" for="restockDelta">Quantity change</label>
+    <input id="restockDelta" type="number" step="1" class="form-control" [(ngModel)]="restockDelta"
+           (keyup.enter)="confirmRestock()" placeholder="e.g. 50">
+    <div class="error-text" *ngIf="restockError" role="alert">{{ restockError }}</div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-success" [disabled]="isRestocking" (click)="confirmRestock()">Save</button>
+      <button type="button" class="btn btn-secondary" (click)="restockTarget = null">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="materialToDelete">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="deleteMaterialText">
+    <p id="deleteMaterialText">Are you sure you want to delete <strong>{{ materialToDelete.materialName }}</strong>?</p>
+    <p class="hint">If it has orders or reviews, it will be archived instead so that history is kept.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-danger" [disabled]="isDeleting" (click)="confirmDelete()">Yes, Delete</button>
+      <button type="button" class="btn btn-secondary" (click)="materialToDelete = null">Cancel</button>
+    </div>
+  </div>
+</div>

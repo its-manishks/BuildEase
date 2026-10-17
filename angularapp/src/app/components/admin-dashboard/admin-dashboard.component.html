@@ -1,0 +1,87 @@
+<div class="page-container dashboard">
+  <div class="dash-head">
+    <div>
+      <h2 class="dash-title">Dashboard</h2>
+      <p class="dash-sub" *ngIf="data">Live data · updated {{ data.generatedAt | date: 'dd MMM, h:mm a' }}</p>
+    </div>
+    <button type="button" class="btn btn-primary" [disabled]="isLoading" (click)="load()">Refresh</button>
+  </div>
+
+  <div class="error-text" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+  <div class="kpi-grid" *ngIf="isLoading && !data">
+    <div class="skeleton kpi-skeleton" *ngFor="let placeholder of [1, 2, 3, 4]"></div>
+  </div>
+
+  <ng-container *ngIf="data">
+    <div class="kpi-grid">
+      <a class="kpi" routerLink="/admin/requests">
+        <span class="kpi-label">Total requests</span>
+        <strong class="kpi-value">{{ data.totalRequests | number }}</strong>
+        <span class="kpi-note">{{ data.shippedRequests | number }} shipped</span>
+      </a>
+      <a class="kpi warn" routerLink="/admin/requests">
+        <span class="kpi-label">Awaiting decision</span>
+        <strong class="kpi-value">{{ data.pendingRequests | number }}</strong>
+        <span class="kpi-note">{{ pendingShare }}% of all requests</span>
+      </a>
+      <a class="kpi" routerLink="/admin/materials">
+        <span class="kpi-label">Active materials</span>
+        <strong class="kpi-value">{{ data.activeMaterials | number }}</strong>
+        <span class="kpi-note" [class.alert]="data.outOfStockMaterials > 0">{{ data.outOfStockMaterials }} out of stock · {{ data.lowStockMaterials }} low</span>
+      </a>
+      <a class="kpi" routerLink="/admin/insights">
+        <span class="kpi-label">Customers</span>
+        <strong class="kpi-value">{{ data.customers | number }}</strong>
+        <span class="kpi-note">registered users</span>
+      </a>
+      <a class="kpi good" routerLink="/admin/feedbacks">
+        <span class="kpi-label">Average rating</span>
+        <strong class="kpi-value">{{ data.averageRating !== null ? (data.averageRating | number: '1.1-1') + ' ★' : '—' }}</strong>
+        <span class="kpi-note">{{ data.totalReviews ? (data.totalReviews | number) + ' verified reviews' : 'No reviews yet' }}</span>
+      </a>
+    </div>
+
+    <div class="chart-grid">
+      <section class="panel">
+        <h3>Requests by status</h3>
+        <div class="chart-box"><canvas #statusChart [hidden]="!hasValues(data.requestsByStatus)" aria-label="Requests by status chart" role="img"></canvas>
+          <p class="no-data" *ngIf="!hasValues(data.requestsByStatus)">No requests yet</p></div>
+      </section>
+      <section class="panel wide">
+        <h3>Requests in the last 30 days</h3>
+        <div class="chart-box"><canvas #trendChart [hidden]="!hasValues(data.requestsLast30Days)" aria-label="Requests per day chart" role="img"></canvas>
+          <p class="no-data" *ngIf="!hasValues(data.requestsLast30Days)">No requests in the last 30 days</p></div>
+      </section>
+      <section class="panel">
+        <h3>Materials by category</h3>
+        <div class="chart-box"><canvas #categoryChart [hidden]="!hasValues(data.materialsByCategory)" aria-label="Materials by category chart" role="img"></canvas>
+          <p class="no-data" *ngIf="!hasValues(data.materialsByCategory)">No materials yet</p></div>
+      </section>
+      <section class="panel">
+        <h3>Ratings</h3>
+        <div class="chart-box"><canvas #ratingChart [hidden]="!hasValues(data.ratingDistribution)" aria-label="Ratings chart" role="img"></canvas>
+          <p class="no-data" *ngIf="!hasValues(data.ratingDistribution)">No reviews yet</p></div>
+      </section>
+      <section class="panel">
+        <h3>Low stock</h3>
+        <ul class="list" *ngIf="data.lowStockItems.length; else stocked">
+          <li *ngFor="let item of data.lowStockItems">
+            <span>{{ item.materialName }}</span>
+            <span class="stock-badge" [ngClass]="item.quantity === 0 ? 'stock-out' : 'stock-low'">
+              {{ item.quantity === 0 ? 'Out of stock' : item.quantity + ' ' + item.unitType }}</span>
+          </li>
+        </ul>
+        <ng-template #stocked><p class="no-data">Everything is well stocked</p></ng-template>
+        <a routerLink="/admin/materials" class="panel-link">Manage stock →</a>
+      </section>
+      <section class="panel">
+        <h3>Most requested</h3>
+        <ol class="list ranked" *ngIf="data.topRequestedMaterials.length; else noTop">
+          <li *ngFor="let item of data.topRequestedMaterials"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></li>
+        </ol>
+        <ng-template #noTop><p class="no-data">No requests yet</p></ng-template>
+      </section>
+    </div>
+  </ng-container>
+</div>

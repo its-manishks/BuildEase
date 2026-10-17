@@ -1,0 +1,76 @@
+<div class="page-container">
+  <div class="form-card review-card">
+    <h2 class="form-title">Write a Review</h2>
+
+    <div *ngIf="isLoading" class="skeleton review-skeleton" aria-label="Loading"></div>
+
+    <ng-container *ngIf="!isLoading">
+      <div class="material-strip" *ngIf="material">
+        <img *ngIf="imageSrc; else noImage" [src]="imageSrc" [alt]="material.materialName" class="thumb">
+        <ng-template #noImage><span class="thumb thumb-empty" aria-hidden="true">{{ material.materialName.charAt(0) }}</span></ng-template>
+        <div>
+          <strong>{{ material.materialName }}</strong>
+          <span class="sub">{{ material.category }}</span>
+        </div>
+      </div>
+
+      <div class="empty-panel" *ngIf="!eligible">
+        <h3>This material isn't awaiting your review</h3>
+        <p>You can review a material once your order for it has been shipped, and only once.
+          <a routerLink="/user/feedbacks">Go to My Feedbacks</a></p>
+      </div>
+
+      <form *ngIf="eligible" [formGroup]="feedbackForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+          <label>Your rating<span class="required">*</span></label>
+          <app-star-rating size="lg" [rating]="rating" (ratingChange)="setRating($event)"></app-star-rating>
+          <div class="error-text" *ngIf="showError('rating', 'min')">*Please choose 1 to 5 stars</div>
+        </div>
+
+        <div class="form-group">
+          <label for="feedbackText">Your review<span class="required">*</span></label>
+          <textarea id="feedbackText" rows="5" maxlength="1000" class="form-control" formControlName="feedbackText"
+                    placeholder="What did you like? What could be better?"></textarea>
+          <p class="counter">{{ textLength }} / 1000</p>
+          <div class="spelling" *ngIf="spellingIssues.length" aria-live="polite">
+            <span class="spelling-label">Spelling suggestions:</span>
+            <span class="spelling-chip" *ngFor="let issue of spellingIssues">
+              <s>{{ issue.word }}</s> →
+              <button *ngFor="let suggestion of issue.suggestions" type="button" class="link-btn"
+                      (click)="acceptSuggestion(issue, suggestion)">{{ suggestion }}</button>
+              <button type="button" class="link-btn muted" (click)="ignoreSuggestion(issue)"
+                      [attr.aria-label]="'Ignore ' + issue.word">Ignore</button>
+            </span>
+          </div>
+          <div class="improve" *ngIf="aiEnabled">
+            <button type="button" class="btn btn-secondary btn-small" [disabled]="improving" (click)="improveWording()">
+              {{ improving ? 'Thinking…' : 'Improve wording' }}</button>
+            <span class="error-text" *ngIf="improveError">{{ improveError }}</span>
+          </div>
+          <div class="improve-box" *ngIf="improvedText" role="region" aria-label="Suggested wording">
+            <p class="improve-label">Suggested wording</p>
+            <p class="improve-text">{{ improvedText }}</p>
+            <button type="button" class="btn btn-success btn-small" (click)="useImprovedText()">Use this</button>
+            <button type="button" class="btn btn-secondary btn-small" (click)="improvedText = ''">Dismiss</button>
+          </div>
+          <div class="error-text" *ngIf="showError('feedbackText', 'required')">*Feedback is required</div>
+          <div class="error-text" *ngIf="showError('feedbackText', 'minlength')">*At least 10 characters</div>
+        </div>
+
+        <div class="error-text form-message" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+        <button id="submitFeedback" type="submit" class="btn btn-success wide" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Submitting...' : 'Submit Review' }}
+        </button>
+      </form>
+    </ng-container>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showSuccessModal">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="feedbackSuccessText">
+    <p id="feedbackSuccessText">Thank you! Your review was added.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-success" (click)="onSuccessOk()">Ok</button>
+    </div>
+  </div>
+</div>

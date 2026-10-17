@@ -1,0 +1,74 @@
+<div class="page-container admins-page">
+  <div class="page-card" *ngIf="isPrimary">
+    <h2 class="page-title">Add an Admin</h2>
+    <div class="title-divider"></div>
+    <form [formGroup]="form" (ngSubmit)="createAdmin()" novalidate class="admin-form">
+      <div class="form-group">
+        <label for="adminUsername">Username</label>
+        <input id="adminUsername" class="form-control" formControlName="username" autocomplete="off">
+        <div class="error-text" *ngIf="invalid('username')">3-30 characters, starting with a letter</div>
+      </div>
+      <div class="form-group">
+        <label for="adminEmail">Email</label>
+        <input id="adminEmail" type="email" class="form-control" formControlName="email" autocomplete="off">
+        <div class="error-text" *ngIf="invalid('email')">Enter a valid email</div>
+      </div>
+      <div class="form-group">
+        <label for="adminMobile">Mobile</label>
+        <input id="adminMobile" inputmode="numeric" maxlength="10" class="form-control" formControlName="mobileNumber">
+        <div class="error-text" *ngIf="invalid('mobileNumber')">Enter a valid 10-digit mobile number</div>
+      </div>
+      <div class="form-group">
+        <label for="adminPassword">Temporary password</label>
+        <input id="adminPassword" type="password" class="form-control" formControlName="temporaryPassword" autocomplete="new-password">
+        <ul class="password-rules" aria-label="Password requirements">
+          <li *ngFor="let rule of passwordRules" [class.ok]="rule.ok">{{ rule.label }}</li>
+        </ul>
+      </div>
+      <p class="note full">The new admin must change this password at first login.</p>
+      <div class="error-text full" *ngIf="createError" role="alert">{{ createError }}</div>
+      <div class="full">
+        <button type="submit" class="btn btn-success" [disabled]="isCreating">{{ isCreating ? 'Creating...' : 'Create Admin' }}</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="page-card">
+    <h2 class="page-title">Admins</h2>
+    <div class="title-divider"></div>
+    <p class="note" *ngIf="!isPrimary">Only the primary admin can add, disable or enable admins.</p>
+    <div class="error-text" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr><th>Username</th><th>Email</th><th>Mobile</th><th>Status</th><th *ngIf="isPrimary">Action</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading"><td [attr.colspan]="isPrimary ? 5 : 4"><div class="skeleton row-skeleton"></div></td></tr>
+          <ng-container *ngIf="!isLoading && result">
+            <tr *ngFor="let admin of result.content">
+              <td class="left"><strong>{{ admin.username | titlecase }}</strong>
+                <span *ngIf="admin.primaryAdmin" class="chip chip-shipped">Primary</span></td>
+              <td>{{ admin.email }}</td>
+              <td>{{ admin.mobileNumber }}</td>
+              <td><span class="chip" [ngClass]="admin.accountStatus === 'Active' ? 'chip-approved' : 'chip-rejected'">{{ admin.accountStatus }}</span></td>
+              <td *ngIf="isPrimary">
+                <button *ngIf="!admin.primaryAdmin" type="button" class="btn"
+                        [ngClass]="admin.accountStatus === 'Active' ? 'btn-danger' : 'btn-success'"
+                        [disabled]="busyId === admin.userId" (click)="toggleActive(admin)">
+                  {{ admin.accountStatus === 'Active' ? 'Disable' : 'Enable' }}
+                </button>
+                <span *ngIf="admin.primaryAdmin" class="note">Protected</span>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                    [totalElements]="result.totalElements" [size]="result.size"
+                    (pageChange)="goToPage($event)"></app-pagination>
+  </div>
+</div>

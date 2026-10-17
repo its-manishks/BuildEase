@@ -1,0 +1,72 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-banner">
+      <h1 class="brand-title">BuildEase</h1>
+    </div>
+
+    <div class="auth-panel">
+      <form class="auth-form" [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
+        <h2>Signup</h2>
+
+        <div class="form-field">
+          <input id="username" type="text" formControlName="username" placeholder="Username" autocomplete="username">
+          <div class="error-text" *ngIf="showError('username', 'required')">Username is required</div>
+          <div class="error-text" *ngIf="showError('username', 'pattern')">3-30 characters, starting with a letter</div>
+        </div>
+
+        <div class="form-field">
+          <input id="email" type="email" formControlName="email" placeholder="Email" autocomplete="email">
+          <div class="error-text" *ngIf="showError('email', 'required')">Email is required</div>
+          <div class="error-text" *ngIf="showError('email', 'pattern')">Please enter a valid email</div>
+        </div>
+
+        <div class="form-field">
+          <input id="mobileNumber" type="text" inputmode="numeric" maxlength="10" formControlName="mobileNumber"
+                 placeholder="Mobile" autocomplete="tel-national">
+          <div class="error-text" *ngIf="showError('mobileNumber', 'required')">Mobile number is required</div>
+          <div class="error-text" *ngIf="showError('mobileNumber', 'pattern')">Enter a valid 10-digit mobile number</div>
+        </div>
+
+        <div class="form-field">
+          <textarea id="address" rows="2" formControlName="address" placeholder="Delivery address"
+                    autocomplete="street-address"></textarea>
+          <div class="error-text" *ngIf="showError('address', 'required')">Address is required</div>
+          <div class="error-text" *ngIf="showError('address', 'minlength') || showError('address', 'maxlength')">
+            Address must be 10-300 characters
+          </div>
+        </div>
+
+        <div class="form-field">
+          <input id="password" type="password" formControlName="password" placeholder="Password"
+                 autocomplete="new-password">
+          <ul class="password-rules" aria-label="Password requirements">
+            <li *ngFor="let rule of passwordRules" [class.ok]="rule.ok">{{ rule.label }}</li>
+          </ul>
+          <div class="error-text" *ngIf="showError('password', 'required')">Password is required</div>
+        </div>
+
+        <div class="form-field">
+          <input id="confirmPassword" type="password" formControlName="confirmPassword"
+                 placeholder="Confirm Password" autocomplete="new-password">
+          <div class="error-text" *ngIf="showError('confirmPassword', 'required')">Confirm Password is required</div>
+          <div class="error-text" *ngIf="showPasswordMismatch">Passwords do not match</div>
+        </div>
+
+        <div class="error-text server-error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+        <button id="signupButton" type="submit" class="primary-button" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Creating account...' : 'Signup' }}
+        </button>
+
+        <p class="switch-link">Already have an account? <a routerLink="/login">Login</a></p>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<app-otp-verification *ngIf="registration" [email]="registration.email" [maskedEmail]="registration.maskedEmail"
+                      [maskedMobile]="registration.maskedMobile" [devOtps]="registration.devOtps"
+                      [failedChannels]="registration.failedChannels"
+                      (verified)="onVerified()" (closed)="onVerificationClosed()"></app-otp-verification>

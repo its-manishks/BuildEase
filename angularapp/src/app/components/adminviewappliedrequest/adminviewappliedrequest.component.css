@@ -1,0 +1,99 @@
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--be-border);
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-chip.active {
+  border-color: var(--be-blue);
+  background: var(--be-blue);
+  color: #ffffff;
+}
+
+.left {
+  text-align: left;
+}
+
+.sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--be-muted);
+}
+
+.urgency.high {
+  font-weight: 700;
+  color: #b3261e;
+}
+
+.action-cell {
+  min-width: 230px;
+}
+
+.final {
+  font-size: 0.8rem;
+  color: var(--be-muted);
+}
+
+.row-skeleton {
+  height: 120px;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px 12px;
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+
+.details dt {
+  font-weight: 600;
+  color: var(--be-muted);
+}
+
+.details dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+.note-label {
+  display: block;
+  margin: 8px 0 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.timeline-title {
+  margin: 12px 0 6px;
+  font-size: 0.95rem;
+}
+
+.timeline {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 0.86rem;
+}
+
+.timeline li {
+  margin-bottom: 6px;
+}
+
+.timeline-note {
+  display: block;
+  color: var(--be-muted);
+}
+
+.muted {
+  color: var(--be-muted);
+}

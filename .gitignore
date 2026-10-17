@@ -1,0 +1,34 @@
+# ---------- Backend (Spring Boot / Maven) ----------
+springapp/target/
+springapp/logs/
+springapp/HELP.md
+*.log
+
+# ---------- Frontend (Angular / Node) ----------
+angularapp/node_modules/
+angularapp/dist/
+angularapp/.angular/
+angularapp/coverage/
+# each developer keeps their own backend URL (copy environment.example.ts)
+angularapp/src/environments/environment.ts
+
+# ---------- Secrets and local configuration ----------
+.env
+.env.*
+*.pem
+*.key
+
+# ---------- IDE and OS files ----------
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.DS_Store
+Thumbs.db
+
+# ---------- Archives and handover files ----------
+*.zip
+*.tar.gz

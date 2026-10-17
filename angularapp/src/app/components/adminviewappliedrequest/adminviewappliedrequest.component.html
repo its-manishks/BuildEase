@@ -1,0 +1,123 @@
+<div class="page-container">
+  <div class="page-card">
+    <h2 class="page-title">Material Requests for Approval</h2>
+    <div class="title-divider"></div>
+
+    <div class="chip-row" role="group" aria-label="Filter by status">
+      <button type="button" class="filter-chip" [class.active]="!query.status" (click)="filterStatus()">All</button>
+      <button *ngFor="let status of statuses" type="button" class="filter-chip" [class.active]="query.status === status"
+              (click)="filterStatus(status)">{{ status }}</button>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" class="search-input" placeholder="Search material, username or email..."
+             [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)" aria-label="Search requests">
+      <select class="filter-select" [(ngModel)]="query.urgency" (change)="applyFilters()" aria-label="Filter by urgency">
+        <option [ngValue]="undefined">All urgency levels</option>
+        <option *ngFor="let level of urgencyLevels" [ngValue]="level">{{ level }}</option>
+      </select>
+    </div>
+
+    <div class="error-text" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Material</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Urgency</th>
+            <th>Delivery</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading"><td colspan="9"><div class="skeleton row-skeleton"></div></td></tr>
+          <tr *ngIf="!isLoading && result?.content?.length === 0"><td colspan="9" class="empty-state">Oops! No records found</td></tr>
+          <ng-container *ngIf="!isLoading && result">
+            <tr *ngFor="let request of result.content; trackBy: trackById">
+              <td>{{ request.materialRequestId }}</td>
+              <td class="left"><strong>{{ request.user.username | titlecase }}</strong><span class="sub">{{ request.user.email }}</span></td>
+              <td class="left">{{ request.material.materialName }}</td>
+              <td>{{ request.quantity }} {{ request.material.unitType }}</td>
+              <td>₹{{ (request.totalPrice ?? 0) | number: '1.0-2' }}</td>
+              <td><span class="urgency" [class.high]="request.urgencyLevel === 'High'">{{ request.urgencyLevel }}</span></td>
+              <td>{{ request.preferredDeliveryDate | date: 'dd MMM' }}<span class="sub">{{ request.timeSlot }}</span></td>
+              <td><span [ngClass]="chip(request.status)">{{ request.status }}</span></td>
+              <td class="action-cell">
+                <button type="button" class="btn btn-primary" (click)="showDetails(request)">Show More</button>
+                <ng-container *ngIf="updatingId !== request.materialRequestId; else saving">
+                  <button *ngIf="can(request, 'Approved')" type="button" class="btn btn-success" (click)="act(request, 'Approved')">Approve</button>
+                  <button *ngIf="can(request, 'Rejected')" type="button" class="btn btn-danger" (click)="act(request, 'Rejected')">Reject</button>
+                  <button *ngIf="can(request, 'Shipped')" type="button" class="btn btn-info" (click)="act(request, 'Shipped')">Mark Shipped</button>
+                </ng-container>
+                <ng-template #saving><span class="final">Saving...</span></ng-template>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                    [totalElements]="result.totalElements" [size]="result.size" [showPageSize]="true"
+                    (pageChange)="goToPage($event)" (sizeChange)="changeSize($event)"></app-pagination>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="confirmAction">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="confirmActionText">
+    <p id="confirmActionText" *ngIf="confirmAction.status === 'Rejected'">
+      Reject request #{{ confirmAction.request.materialRequestId }}? The reserved
+      {{ confirmAction.request.quantity }} {{ confirmAction.request.material.unitType }} will return to stock. This cannot be undone.
+    </p>
+    <p id="confirmActionText" *ngIf="confirmAction.status === 'Shipped'">
+      Mark request #{{ confirmAction.request.materialRequestId }} as shipped? The customer can then review it.
+    </p>
+    <label class="note-label" for="decisionNote">{{ confirmAction.status === 'Rejected' ? 'Reason (shown to the customer)' : 'Note for the customer (optional)' }}</label>
+    <textarea id="decisionNote" rows="3" maxlength="300" class="form-control" [(ngModel)]="decisionNote"
+              [placeholder]="confirmAction.status === 'Rejected' ? 'e.g. Delivery area not covered' : 'e.g. Vehicle number, expected time'"></textarea>
+    <div class="error-text" *ngIf="noteError" role="alert">{{ noteError }}</div>
+    <div class="modal-actions">
+      <button type="button" class="btn" [ngClass]="confirmAction.status === 'Rejected' ? 'btn-danger' : 'btn-info'" (click)="confirm()">
+        {{ confirmAction.status === 'Rejected' ? 'Yes, Reject' : 'Yes, Mark Shipped' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="confirmAction = null">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="selectedRequest">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="adminRequestTitle">
+    <h3 id="adminRequestTitle" class="modal-title">Request #{{ selectedRequest.materialRequestId }}</h3>
+    <dl class="details">
+      <dt>Status</dt><dd><span [ngClass]="chip(selectedRequest.status)">{{ selectedRequest.status }}</span></dd>
+      <dt>Customer</dt><dd>{{ selectedRequest.user.username | titlecase }} ({{ selectedRequest.user.email }})</dd>
+      <dt>Material</dt><dd>{{ selectedRequest.material.materialName }}</dd>
+      <dt>Quantity</dt><dd>{{ selectedRequest.quantity }} {{ selectedRequest.material.unitType }}</dd>
+      <dt>Total</dt><dd>₹{{ (selectedRequest.totalPrice ?? 0) | number: '1.0-2' }}</dd>
+      <dt>Urgency</dt><dd>{{ selectedRequest.urgencyLevel }}</dd>
+      <dt>Requested</dt><dd>{{ selectedRequest.requestDate | date: 'dd MMM yyyy' }}</dd>
+      <dt>Delivery</dt><dd>{{ selectedRequest.preferredDeliveryDate | date: 'dd MMM yyyy' }}, {{ selectedRequest.timeSlot }}</dd>
+      <dt>Address</dt><dd>{{ selectedRequest.deliveryAddress }}</dd>
+      <dt>Contact</dt><dd>{{ selectedRequest.contactNumber }}</dd>
+      <dt>Comments</dt><dd>{{ selectedRequest.comments || '—' }}</dd>
+    </dl>
+    <h4 class="timeline-title">Timeline</h4>
+    <ol class="timeline">
+      <li><strong>Requested</strong> · {{ selectedRequest.requestDate | date: 'dd MMM yyyy' }}</li>
+      <li *ngFor="let change of timeline">
+        <strong>{{ change.toStatus }}</strong> · {{ change.changedAt | date: 'dd MMM yyyy, h:mm a' }} by {{ change.changedBy | titlecase }}
+        <span class="timeline-note" *ngIf="change.note">“{{ change.note }}”</span>
+      </li>
+      <li *ngIf="timelineLoading" class="muted">Loading...</li>
+    </ol>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="selectedRequest = null">Close</button>
+    </div>
+  </div>
+</div>

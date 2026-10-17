@@ -1,0 +1,38 @@
+<section *ngIf="items.length" class="reco" [class.compact]="compact" aria-label="Recommended materials">
+    <h3 class="reco-title">{{ heading }}</h3>
+    <p *ngIf="subheading" class="reco-sub">{{ subheading }}</p>
+    <div class="reco-row">
+      <article *ngFor="let item of items; trackBy: trackById" class="reco-card">
+        <img *ngIf="imageSrc(item.material) as src; else noImage" [src]="src" [alt]="item.material.materialName"
+             class="reco-img" loading="lazy" (error)="brokenImages.add(item.material.materialId)">
+        <ng-template #noImage><div class="reco-img reco-placeholder" aria-hidden="true">{{ item.material.materialName.charAt(0) }}</div></ng-template>
+        <div class="reco-body">
+          <span class="reco-reason">{{ item.reason }}</span>
+          <h4 class="reco-name">{{ item.material.materialName }}</h4>
+          <p class="reco-price">₹{{ item.material.pricePerUnit | number: '1.0-2' }} / {{ item.material.unitType }}</p>
+          <span class="stock-badge" [ngClass]="badge(item.material).css">{{ badge(item.material).label }}</span>
+          <div class="reco-actions">
+            <button type="button" class="btn btn-secondary" (click)="infoFor = item.material">View Info</button>
+            <button *ngIf="canRequest(item.material)" type="button" class="btn btn-success"
+                    (click)="request.emit(item.material)">Request</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+  
+  <div class="modal-backdrop" *ngIf="infoFor as info">
+    <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="recoInfoTitle">
+      <h3 id="recoInfoTitle" class="modal-title">{{ info.materialName }}</h3>
+      <dl class="reco-details">
+        <dt>Category</dt><dd>{{ info.category }}</dd>
+        <dt>Price</dt><dd>₹{{ info.pricePerUnit | number: '1.0-2' }} / {{ info.unitType }}</dd>
+        <dt>Availability</dt><dd>{{ badge(info).label }}</dd>
+        <dt>About</dt><dd>{{ info.description }}</dd>
+      </dl>
+      <div class="modal-actions">
+        <button *ngIf="canRequest(info)" type="button" class="btn btn-success" (click)="request.emit(info); infoFor = null">Request</button>
+        <button type="button" class="btn btn-secondary" (click)="infoFor = null">Close</button>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,93 @@
+.list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.list-head .page-title {
+  margin: 0;
+  text-align: left;
+}
+
+.list-head .btn {
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+
+.alert-error {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #fdecea;
+  color: #b71c1c;
+}
+
+.thumb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 42px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.thumb-empty {
+  background: #eef1f5;
+  color: var(--be-muted);
+  font-weight: 700;
+}
+
+.name-cell {
+  max-width: 260px;
+  text-align: left;
+}
+
+.desc {
+  display: block;
+  overflow: hidden;
+  color: var(--be-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.stock-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-cell {
+  min-width: 220px;
+}
+
+tr.archived td {
+  opacity: 0.6;
+}
+
+.row-skeleton {
+  height: 120px;
+}
+
+.hint {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: var(--be-muted);
+}

@@ -1,0 +1,184 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f2f2f2;
+  box-sizing: border-box;
+}
+
+.auth-card {
+  display: flex;
+  width: 100%;
+  max-width: 880px;
+  min-height: 520px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.auth-banner {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url('/assets/images/background.webp') center / cover no-repeat;
+}
+
+.brand-title {
+  margin: 0;
+  color: #ffffff;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.6rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.auth-panel {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.auth-form {
+  width: 100%;
+  max-width: 300px;
+  padding: 20px 18px;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.auth-form h2 {
+  margin: 0 0 14px;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.3rem;
+  color: #111111;
+}
+
+.form-field {
+  margin-bottom: 10px;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 6px;
+  border: none;
+  border-bottom: 1px solid #bdbdbd;
+  font-size: 0.9rem;
+  outline: none;
+  background: transparent;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-bottom-color: #0b74e5;
+}
+
+.error-text {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #d32f2f;
+}
+
+.server-error {
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.primary-button {
+  display: block;
+  width: 60%;
+  margin: 8px auto 10px;
+  padding: 8px 0;
+  border: none;
+  border-radius: 4px;
+  background: #0b74e5;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background: #095fbc;
+}
+
+.primary-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.primary-button:focus-visible,
+.switch-link a:focus-visible {
+  outline: 2px solid #0b74e5;
+  outline-offset: 2px;
+}
+
+.switch-link {
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #333333;
+}
+
+.switch-link a {
+  color: #0b74e5;
+  text-decoration: none;
+}
+
+@media (max-width: 700px) {
+  .auth-card {
+    flex-direction: column;
+  }
+
+  .auth-banner {
+    min-height: 180px;
+  }
+}
+/* Phase 2 (Manish): address field and live password checklist */
+.form-field textarea {
+width: 100%;
+box-sizing: border-box;
+padding: 8px 6px;
+border: none;
+border-bottom: 1px solid #bdbdbd;
+font-family: inherit;
+font-size: 0.9rem;
+resize: vertical;
+outline: none;
+background: transparent;
+}
+
+.form-field textarea:focus {
+border-bottom-color: #0b74e5;
+}
+
+.password-rules {
+display: flex;
+flex-wrap: wrap;
+gap: 4px 10px;
+margin: 6px 0 0;
+padding: 0;
+list-style: none;
+font-size: 0.72rem;
+color: #8a8f98;
+}
+
+.password-rules li::before {
+content: "\25CB  ";
+}
+
+.password-rules li.ok {
+color: #1e7a3a;
+}
+
+.password-rules li.ok::before {
+content: "\2713  ";
+}

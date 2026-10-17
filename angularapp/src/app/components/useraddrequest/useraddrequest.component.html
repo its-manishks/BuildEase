@@ -1,0 +1,111 @@
+<div class="page-container request-page">
+  <button id="backButton" type="button" class="btn btn-primary back-link" (click)="goBack()">&larr; Materials</button>
+
+  <div *ngIf="isLoading" class="skeleton request-skeleton" aria-label="Loading"></div>
+
+  <div class="request-layout" *ngIf="!isLoading && material">
+    <aside class="material-summary page-card">
+      <img *ngIf="imageSrc; else noImage" [src]="imageSrc" [alt]="material.materialName" class="summary-image">
+      <ng-template #noImage><div class="summary-image placeholder" aria-hidden="true">{{ material.materialName.charAt(0) }}</div></ng-template>
+      <h2 class="summary-title">{{ material.materialName }}</h2>
+      <p class="summary-meta">{{ material.category }}</p>
+      <p class="summary-price">₹{{ material.pricePerUnit | number: '1.0-2' }} <span>/ {{ material.unitType }}</span></p>
+      <span class="stock-badge" [ngClass]="badge(material).css">{{ badge(material).label }}</span>
+      <p class="summary-desc">{{ material.description }}</p>
+    </aside>
+
+    <form class="page-card request-form" [formGroup]="requestForm" (ngSubmit)="onSubmit()" novalidate>
+      <h2 class="form-title">Material Request</h2>
+
+      <div class="unavailable" *ngIf="!canOrder" role="alert">
+        {{ material.active === false ? 'This material is no longer available.' : 'This material is out of stock right now.' }}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="quantity">Quantity ({{ material.unitType }})<span class="required">*</span></label>
+          <input id="quantity" type="number" min="1" [max]="maxQuantity" step="1" class="form-control" formControlName="quantity">
+          <p class="hint">{{ available }} available</p>
+          <div class="error-text" *ngIf="showError('quantity', 'required')">*Quantity is required</div>
+          <div class="error-text" *ngIf="showError('quantity', 'min') || showError('quantity', 'pattern')">*Whole number, at least 1</div>
+          <div class="error-text" *ngIf="quantityTooHigh">*At most {{ maxQuantity }}</div>
+        </div>
+        <div class="form-group">
+          <label for="urgencyLevel">Urgency Level<span class="required">*</span></label>
+          <select id="urgencyLevel" class="form-control" formControlName="urgencyLevel">
+            <option value="" disabled>Select urgency</option>
+            <option *ngFor="let level of urgencyLevels" [value]="level">{{ level }}</option>
+          </select>
+          <div class="error-text" *ngIf="showError('urgencyLevel', 'required')">*Urgency Level is required</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="preferredDeliveryDate">Preferred Delivery Date<span class="required">*</span></label>
+          <input id="preferredDeliveryDate" type="date" class="form-control" [min]="minDate" [max]="maxDate"
+                 formControlName="preferredDeliveryDate">
+          <div class="error-text" *ngIf="showError('preferredDeliveryDate', 'required')">*Preferred Delivery Date is required</div>
+          <div class="error-text" *ngIf="dateOutOfRange">*Choose a date from today up to 6 months ahead</div>
+        </div>
+        <div class="form-group">
+          <label for="timeSlot">Time Slot<span class="required">*</span></label>
+          <select id="timeSlot" class="form-control" formControlName="timeSlot">
+            <option value="" disabled>Select time slot</option>
+            <option *ngFor="let slot of timeSlots" [value]="slot">{{ slot }}</option>
+          </select>
+          <div class="error-text" *ngIf="showError('timeSlot', 'required')">*Time Slot is required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="deliveryAddress">Delivery Address<span class="required">*</span></label>
+        <textarea id="deliveryAddress" rows="2" class="form-control" formControlName="deliveryAddress"></textarea>
+        <p class="hint" *ngIf="profileAddressUsed">Prefilled from your profile. Changes apply to this order only.</p>
+        <div class="error-text" *ngIf="showError('deliveryAddress', 'required')">*Delivery Address is required</div>
+        <div class="error-text" *ngIf="showError('deliveryAddress', 'minlength') || showError('deliveryAddress', 'maxlength')">*10-300 characters</div>
+      </div>
+
+      <div class="form-group">
+        <label for="contactNumber">Contact Number<span class="required">*</span></label>
+        <input id="contactNumber" type="text" inputmode="numeric" maxlength="10" class="form-control" formControlName="contactNumber">
+        <div class="error-text" *ngIf="showError('contactNumber', 'required')">*Contact Number is required</div>
+        <div class="error-text" *ngIf="showError('contactNumber', 'pattern')">*Enter a valid 10-digit mobile number</div>
+      </div>
+
+      <div class="form-group">
+        <label for="comments">Comments</label>
+        <textarea id="comments" rows="2" class="form-control" formControlName="comments" placeholder="Optional"></textarea>
+        <div class="error-text" *ngIf="showError('comments', 'maxlength')">*At most 500 characters</div>
+      </div>
+
+      <div class="total-row">
+        <span>Estimated total</span>
+        <strong>₹{{ total | number: '1.0-2' }}</strong>
+      </div>
+
+      <div class="error-text form-message" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+      <button id="submitRequest" type="submit" class="btn btn-success submit-wide" [disabled]="isSubmitting || !canOrder">
+        {{ isSubmitting ? 'Submitting...' : 'Submit Request' }}
+      </button>
+    </form>
+  </div>
+
+  <div class="empty-panel" *ngIf="!isLoading && !material">
+    <h3>Material unavailable</h3>
+    <p>{{ errorMessage || 'The selected material could not be loaded.' }}</p>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showSuccessModal">
+  <div class="modal-box" [class.modal-small]="!afterOrderItems.length" [class.modal-suggest]="afterOrderItems.length"
+       role="dialog" aria-modal="true" aria-labelledby="requestSuccessText">
+    <p id="requestSuccessText">Request Submitted Successfully!</p>
+    <app-recommendation-cards *ngIf="afterOrderItems.length" [items]="afterOrderItems" [compact]="true"
+        heading="You might also need" (request)="requestSuggested($event)"></app-recommendation-cards>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-success" (click)="onSuccessOk()">Ok</button>
+    </div>
+  </div>
+</div>

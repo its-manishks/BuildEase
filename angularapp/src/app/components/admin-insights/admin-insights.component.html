@@ -1,0 +1,74 @@
+<div class="page-container">
+  <div class="page-card">
+    <h2 class="page-title">Customer Insights</h2>
+    <div class="title-divider"></div>
+
+    <div class="toolbar">
+      <input type="search" class="search-input" placeholder="Search by username or email..." [(ngModel)]="searchTerm"
+             (ngModelChange)="onSearch($event)" aria-label="Search customers">
+    </div>
+
+    <div class="error-text" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Total Requests</th>
+            <th>High Urgency</th>
+            <th>Pending</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading"><td colspan="6"><div class="skeleton row-skeleton"></div></td></tr>
+          <tr *ngIf="!isLoading && result?.content?.length === 0"><td colspan="6" class="empty-state">Oops! No records found</td></tr>
+          <ng-container *ngIf="!isLoading && result">
+            <tr *ngFor="let insight of result.content; trackBy: trackById">
+              <td class="left"><strong>{{ insight.username | titlecase }}</strong></td>
+              <td>{{ insight.email }}</td>
+              <td><span class="count">{{ insight.totalRequests }}</span></td>
+              <td><span class="count" [class.alert]="insight.highUrgencyRequests > 0">{{ insight.highUrgencyRequests }}</span></td>
+              <td><span class="count" [class.warn]="insight.pendingRequests > 0">{{ insight.pendingRequests }}</span></td>
+              <td>
+                <button type="button" class="btn btn-primary" [disabled]="insight.totalRequests === 0" (click)="viewOrders(insight)">View Orders</button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                    [totalElements]="result.totalElements" [size]="result.size"
+                    (pageChange)="goToPage($event)"></app-pagination>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="selectedUser">
+  <div class="modal-box modal-wide" role="dialog" aria-modal="true" aria-labelledby="ordersTitle">
+    <h3 id="ordersTitle" class="modal-title">Orders of {{ selectedUser.username | titlecase }}</h3>
+    <div *ngIf="ordersLoading" class="skeleton row-skeleton"></div>
+    <div class="table-wrapper" *ngIf="!ordersLoading">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Material</th><th>Quantity</th><th>Urgency</th><th>Status</th><th>Requested</th></tr></thead>
+        <tbody>
+          <tr *ngIf="orders.length === 0"><td colspan="6" class="empty-state">No orders</td></tr>
+          <tr *ngFor="let order of orders">
+            <td>{{ order.materialRequestId }}</td>
+            <td>{{ order.material.materialName }}</td>
+            <td>{{ order.quantity }} {{ order.material.unitType }}</td>
+            <td>{{ order.urgencyLevel }}</td>
+            <td><span [ngClass]="chip(order.status)">{{ order.status }}</span></td>
+            <td>{{ order.requestDate | date: 'dd MMM yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="selectedUser = null">Close</button>
+    </div>
+  </div>
+</div>

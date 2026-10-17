@@ -1,0 +1,14 @@
+<ng-container *ngIf="userRole$ | async as role">
+  <app-adminnav *ngIf="role === 'Admin'"></app-adminnav>
+  <app-usernav *ngIf="role === 'User'"></app-usernav>
+</ng-container>
+
+<main class="app-content">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Phase 2: app-wide notifications, and the mandatory change-password modal (filled by Manish) -->
+<app-toast></app-toast>
+<app-change-password></app-change-password>
+<!-- Final phase: the assistant launcher (closed and silent until clicked; also on the login page) -->
+<app-chat-widget></app-chat-widget>

@@ -1,0 +1,29 @@
+<div class="chat-root" (keydown)="onKeydown($event)">
+    <section *ngIf="open" class="chat-panel" role="dialog" aria-label="BuildEase assistant">
+      <header class="chat-head">
+        <div>
+          <strong>BuildEase Assistant</strong>
+          <!-- <span class="chat-sub">Answers about BuildEase and your own account</span> -->
+        </div>
+        <button type="button" class="icon-btn" (click)="close()" aria-label="Close assistant">✕</button>
+      </header>
+  
+      <div #scrollArea class="chat-body" aria-live="polite">
+        <p *ngIf="messages.length === 0" class="chat-empty">Ask a question about BuildEase, your requests or reviews.</p>
+        <div *ngFor="let message of messages" class="bubble" [class.user]="message.from === 'user'"
+             [class.error]="message.error">{{ message.text }}</div>
+        <div *ngIf="sending" class="bubble typing" aria-label="The assistant is typing"><span></span><span></span><span></span></div>
+      </div>
+  
+      <form class="chat-input" (ngSubmit)="send()">
+        <input #messageInput type="text" name="draft" [(ngModel)]="draft" [maxlength]="maxLength"
+               placeholder="Type your question…" aria-label="Your question" autocomplete="off">
+        <button type="submit" class="btn btn-primary" [disabled]="sending || !draft.trim()">Send</button>
+      </form>
+    </section>
+  
+    <button #launcher type="button" class="chat-launcher" (click)="toggle()" [attr.aria-expanded]="open"
+            [attr.aria-label]="open ? 'Close BuildEase assistant' : 'Open BuildEase assistant'">
+      <span aria-hidden="true">{{ open ? '✕' : '💬' }}</span>
+    </button>
+  </div>

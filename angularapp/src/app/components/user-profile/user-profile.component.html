@@ -1,0 +1,54 @@
+<section class="page-container profile-page">
+  <div *ngIf="loading" class="skeleton profile-skeleton" aria-label="Loading profile"></div>
+  <div *ngIf="loadError" class="empty-panel" role="alert"><h3>Profile unavailable</h3><p>{{ loadError }}</p></div>
+
+  <ng-container *ngIf="profile">
+    <div class="page-card profile-header">
+      <span class="avatar" aria-hidden="true">{{ initial }}</span>
+      <div>
+        <h2 class="profile-name">{{ profile.username | titlecase }}</h2>
+        <p class="profile-meta">
+          <span class="chip chip-shipped">{{ profile.userRole }}</span>
+          <span *ngIf="profile.primaryAdmin" class="chip chip-approved">Primary admin</span>
+          <span *ngIf="profile.createdAt">Member since {{ profile.createdAt | date: 'MMM yyyy' }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <div class="page-card">
+        <h3 class="section-title">Contact</h3>
+        <dl class="details">
+          <dt>Email</dt>
+          <dd>{{ profile.email }} <span class="chip" [ngClass]="profile.emailVerified ? 'chip-approved' : 'chip-pending'">
+            {{ profile.emailVerified ? 'Verified' : 'Not verified' }}</span></dd>
+          <dt>Mobile</dt>
+          <dd>{{ profile.mobileNumber || '—' }} <span class="chip" [ngClass]="profile.mobileVerified ? 'chip-approved' : 'chip-pending'">
+            {{ profile.mobileVerified ? 'Verified' : 'Not verified' }}</span></dd>
+        </dl>
+      </div>
+
+      <div class="page-card">
+        <h3 class="section-title">Default delivery address</h3>
+        <ng-container *ngIf="!editingAddress">
+          <p class="address">{{ profile.address || 'No address saved yet.' }}</p>
+          <button type="button" class="btn btn-primary" (click)="startEditing()">
+            {{ profile.address ? 'Edit address' : 'Add address' }}
+          </button>
+        </ng-container>
+        <form *ngIf="editingAddress" [formGroup]="addressForm" (ngSubmit)="saveAddress()" novalidate>
+          <label class="sr-only" for="profileAddress">Delivery address</label>
+          <textarea id="profileAddress" rows="3" formControlName="address" class="address-input"></textarea>
+          <div class="error-text" *ngIf="addressError" role="alert">{{ addressError }}</div>
+          <div class="form-buttons">
+            <button type="submit" class="btn btn-success" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+            <button type="button" class="btn btn-secondary" (click)="editingAddress = false">Cancel</button>
+          </div>
+        </form>
+        <p class="note">Used to prefill new material requests. You can still change it for a single order.</p>
+      </div>
+    </div>
+
+    <app-change-password [inline]="true"></app-change-password>
+  </ng-container>
+</section>

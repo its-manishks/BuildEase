@@ -1,0 +1,83 @@
+<div class="page-container">
+  <div class="page-card">
+    <h2 class="page-title">Customer Reviews</h2>
+    <div class="title-divider"></div>
+
+    <div class="toolbar">
+      <input type="search" class="search-input" placeholder="Search material, customer or text..." [(ngModel)]="searchTerm"
+             (ngModelChange)="onSearch($event)" aria-label="Search reviews">
+      <div class="filters">
+        <select class="filter-select" [(ngModel)]="query.rating" (change)="applyFilters()" aria-label="Filter by rating">
+          <option [ngValue]="undefined">All ratings</option>
+          <option *ngFor="let stars of ratings" [ngValue]="stars">{{ stars }} star{{ stars === 1 ? '' : 's' }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="error-text" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr><th>Customer</th><th>Material</th><th>Rating</th><th>Category</th><th>Review</th><th>Date</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading"><td colspan="7"><div class="skeleton row-skeleton"></div></td></tr>
+          <tr *ngIf="!isLoading && result?.content?.length === 0"><td colspan="7" class="empty-state">Oops! No records found</td></tr>
+          <ng-container *ngIf="!isLoading && result">
+            <tr *ngFor="let feedback of result.content; trackBy: trackById">
+              <td class="left"><strong>{{ feedback.user.username | titlecase }}</strong><span class="sub">{{ feedback.user.email }}</span></td>
+              <td>{{ feedback.material?.materialName || '—' }}</td>
+              <td><app-star-rating [rating]="feedback.rating" [readonly]="true" size="sm"></app-star-rating></td>
+              <td>{{ feedback.category }}</td>
+              <td class="review-text">{{ feedback.feedbackText }}</td>
+              <td>{{ feedback.date | date: 'dd MMM yyyy' }}</td>
+              <td class="action-cell">
+                <button type="button" class="btn btn-primary" (click)="profileFeedback = feedback">Show Profile</button>
+                <button *ngIf="feedback.material" type="button" class="btn btn-info" (click)="materialFeedback = feedback">View Info</button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                    [totalElements]="result.totalElements" [size]="result.size" [showPageSize]="true"
+                    (pageChange)="goToPage($event)" (sizeChange)="changeSize($event)"></app-pagination>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="profileFeedback">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <h3 id="profileTitle" class="modal-title">Customer</h3>
+    <dl class="details">
+      <dt>Username</dt><dd>{{ profileFeedback.user.username | titlecase }}</dd>
+      <dt>Email</dt><dd>{{ profileFeedback.user.email }}</dd>
+      <dt>Mobile</dt><dd>{{ profileFeedback.user.mobileNumber }}</dd>
+    </dl>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="profileFeedback = null">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="materialFeedback?.material as material">
+  <div class="modal-box modal-small" role="dialog" aria-modal="true" aria-labelledby="materialTitle">
+    <img *ngIf="materialImage(materialFeedback!) as src" [src]="src" [alt]="material.materialName" class="material-image">
+    <h3 id="materialTitle" class="modal-title">{{ material.materialName }}</h3>
+    <dl class="details">
+      <dt>Material</dt><dd>{{ material.materialName }}</dd>
+      <ng-container *ngIf="materialFeedback!.orderedQuantity != null; else noOrder">
+        <dt>Quantity ordered</dt><dd>{{ materialFeedback!.orderedQuantity }} {{ material.unitType }}</dd>
+        <dt>Ordered on</dt><dd>{{ materialFeedback!.orderDate | date: 'dd MMM yyyy' }}</dd>
+      </ng-container>
+      <ng-template #noOrder><dt>Order</dt><dd>Order details are not available for this review.</dd></ng-template>
+      <dt>Category</dt><dd>{{ material.category }}</dd>
+      <dt>Price</dt><dd>₹{{ material.pricePerUnit | number: '1.0-2' }} / {{ material.unitType }}</dd>
+    </dl>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="materialFeedback = null">Close</button>
+    </div>
+  </div>
+</div>

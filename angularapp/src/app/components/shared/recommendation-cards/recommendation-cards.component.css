@@ -1,0 +1,110 @@
+.reco {
+    margin: 0 0 22px;
+    padding: 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f3faf5, #e7f0fd);
+  }
+  
+  .reco-title {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .reco-sub {
+    margin: 2px 0 0;
+    font-size: 0.82rem;
+    color: var(--be-muted);
+  }
+  
+  .reco-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(200px, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  
+  .reco-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(20, 30, 50, 0.07);
+  }
+  
+  .reco-img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+  }
+  
+  .reco-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e7f0fd, #f3e8ff);
+    color: #5b2a86;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  
+  .reco-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px 12px;
+  }
+  
+  .reco-reason {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #2e7d32;
+  }
+  
+  .reco-name {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  
+  .reco-price {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+  
+  .reco-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+  
+  .reco-actions .btn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .compact .reco-img {
+    height: 80px;
+  }
+  
+  .reco-details {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 6px 10px;
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+  }
+  
+  .reco-details dt {
+    font-weight: 600;
+    color: var(--be-muted);
+  }
+  
+  .reco-details dd {
+    margin: 0;
+  }

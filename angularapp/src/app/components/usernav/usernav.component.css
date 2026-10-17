@@ -1,0 +1,14 @@
+/* Navbar layout lives in src/styles.css (.app-navbar, shared with adminnav). */
+.nav-badge {
+    margin-right: 18px;
+  }
+  
+  .logout-text {
+    margin: 0;
+    font-size: 1rem;
+  }
+  
+  .logout-action {
+    border-radius: 4px;
+    padding: 7px 14px;
+  }

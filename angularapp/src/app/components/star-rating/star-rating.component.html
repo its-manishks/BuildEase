@@ -1,0 +1,13 @@
+<span *ngIf="readonly" class="stars" [ngClass]="'size-' + size" role="img"
+      [attr.aria-label]="current ? current + ' out of 5 stars' : 'Not rated'">
+  <span *ngFor="let star of stars" class="star" [class.on]="filled(star)" aria-hidden="true">★</span>
+  <span *ngIf="showLabel && current" class="star-label">{{ label }}</span>
+</span>
+
+<span *ngIf="!readonly" class="stars interactive" [ngClass]="'size-' + size" role="radiogroup" aria-label="Rating"
+      (keydown)="onKey($event)" (mouseleave)="hover = 0">
+  <button *ngFor="let star of stars" type="button" class="star" [class.on]="filled(star)" role="radio"
+          [attr.aria-checked]="current === star" [attr.aria-label]="star + (star === 1 ? ' star' : ' stars')"
+          (mouseenter)="hover = star" (click)="select(star)">★</button>
+  <span class="star-label" aria-live="polite">{{ label }}</span>
+</span>

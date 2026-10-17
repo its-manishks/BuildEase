@@ -1,0 +1,43 @@
+<section class="orders" aria-labelledby="ordersTitle">
+    <div class="orders-head">
+      <div>
+        <h2 id="ordersTitle">Order again</h2>
+        <p>Your recent approved and shipped orders</p>
+      </div>
+      <div class="arrows" *ngIf="items.length > 1">
+        <button type="button" class="arrow" aria-label="Previous orders" (click)="scroll(-1)">&lsaquo;</button>
+        <button type="button" class="arrow" aria-label="Next orders" (click)="scroll(1)">&rsaquo;</button>
+      </div>
+    </div>
+  
+    <div class="track" *ngIf="loading">
+      <div class="skeleton slide-skeleton" *ngFor="let placeholder of [1, 2, 3]"></div>
+    </div>
+  
+    <div class="empty-panel" *ngIf="!loading && (failed || items.length === 0)">
+      <h3>{{ failed ? 'Previous orders unavailable' : 'No previous orders yet' }}</h3>
+      <p *ngIf="!failed">Once an order is approved, it shows up here for quick reordering.
+        <a routerLink="/user/materials">Browse materials</a></p>
+    </div>
+  
+    <div #track class="track" *ngIf="!loading && items.length" aria-roledescription="carousel" aria-label="Previous orders"
+         (mouseenter)="pause()" (mouseleave)="resume()" (focusin)="pause()" (focusout)="resume()">
+      <article class="slide" *ngFor="let item of items; trackBy: trackById" aria-roledescription="slide">
+        <img *ngIf="imageSrc(item) as src; else noImage" [src]="src" [alt]="item.materialName" class="slide-image"
+             loading="lazy" (error)="onImageError(item)">
+        <ng-template #noImage><div class="slide-image placeholder" aria-hidden="true">{{ item.materialName.charAt(0) }}</div></ng-template>
+        <div class="slide-body">
+          <div class="slide-top">
+            <span class="category">{{ item.category }}</span>
+            <span [ngClass]="chip(item.status)">{{ item.status }}</span>
+          </div>
+          <h3>{{ item.materialName }}</h3>
+          <p class="meta">Last ordered {{ item.lastQuantity }} {{ item.unitType }} · {{ item.requestDate | date: 'dd MMM' }}</p>
+          <p class="price">₹{{ item.pricePerUnit | number: '1.0-2' }} <span>/ {{ item.unitType }}</span></p>
+          <button type="button" class="btn btn-success reorder" [disabled]="!item.canReorder" (click)="reorder(item)">
+            {{ item.canReorder ? 'Reorder' : item.reorderBlockedReason }}
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>

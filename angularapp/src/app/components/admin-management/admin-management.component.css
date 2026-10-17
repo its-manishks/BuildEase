@@ -1,0 +1,54 @@
+.admins-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 18px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.note {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: var(--be-muted);
+}
+
+.left {
+  text-align: left;
+}
+
+.left .chip {
+  margin-left: 6px;
+}
+
+.password-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.74rem;
+  color: #8a8f98;
+}
+
+.password-rules li.ok {
+  color: #1e7a3a;
+}
+
+.row-skeleton {
+  height: 100px;
+}
+
+@media (max-width: 640px) {
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+}

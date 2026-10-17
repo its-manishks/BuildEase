@@ -1,0 +1,70 @@
+<div class="page-container">
+  <div class="catalogue-head">
+    <h2 class="page-title user-title">Available Materials</h2>
+    <input id="searchMaterial" type="search" class="search-input" placeholder="Search materials..."
+           [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)" aria-label="Search materials">
+  </div>
+
+  <app-recommendation-cards *ngIf="recommendations" [items]="recommendations.items"
+      [heading]="recommendations.personalized ? 'Recommended for you' : 'Popular right now'"
+      [subheading]="recommendations.personalized ? 'Based on your previous orders' : 'Place an order to get personalised suggestions'"
+      (request)="requestMaterial($event)"></app-recommendation-cards>
+
+  <div class="chip-row" role="group" aria-label="Filter by category">
+    <button type="button" class="filter-chip" [class.active]="!query.category" (click)="selectCategory()">All</button>
+    <button *ngFor="let category of categories" type="button" class="filter-chip"
+            [class.active]="query.category === category" (click)="selectCategory(category)">{{ category }}</button>
+  </div>
+
+  <div class="toolbar">
+    <label class="check"><input type="checkbox" [(ngModel)]="query.inStockOnly" (change)="applyFilters()"> In stock only</label>
+    <select class="filter-select" [(ngModel)]="query.sort" (change)="applyFilters()" aria-label="Sort by">
+      <option value="name">Name A–Z</option>
+      <option value="price">Price: low to high</option>
+      <option value="price_desc">Price: high to low</option>
+      <option value="newest">Newest</option>
+    </select>
+  </div>
+
+  <div class="alert-error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+  <div class="card-grid" *ngIf="isLoading">
+    <div class="skeleton skeleton-card" *ngFor="let placeholder of [1, 2, 3, 4]"></div>
+  </div>
+
+  <div class="empty-panel" *ngIf="!isLoading && result?.content?.length === 0">
+    <h3>Oops! No records found</h3>
+    <p>Try another search or category.</p>
+  </div>
+
+  <div class="card-grid" *ngIf="!isLoading && result?.content?.length">
+    <article class="item-card" *ngFor="let material of result?.content; trackBy: trackById">
+      <img *ngIf="imageSrc(material) as src; else placeholder" class="item-card-media" [src]="src"
+           [alt]="material.materialName" loading="lazy" (error)="onImageError(material)">
+      <ng-template #placeholder>
+        <div class="item-card-media media-placeholder" aria-hidden="true">{{ material.materialName.charAt(0) }}</div>
+      </ng-template>
+
+      <div class="item-card-body">
+        <div class="card-top">
+          <span class="category">{{ material.category }}</span>
+          <span class="stock-badge" [ngClass]="badge(material).css">{{ badge(material).label }}</span>
+        </div>
+        <h3 class="item-card-title">{{ material.materialName }}</h3>
+        <p class="item-card-meta desc">{{ material.description }}</p>
+        <p class="price">₹{{ material.pricePerUnit | number: '1.0-2' }} <span>/ {{ material.unitType }}</span></p>
+        <div class="item-card-actions">
+          <button *ngIf="isRequested(material)" type="button" class="btn btn-primary wide" disabled>Requested</button>
+          <button *ngIf="!isRequested(material)" type="button" class="btn btn-success wide"
+                  [disabled]="isOutOfStock(material)" (click)="requestMaterial(material)">
+            {{ isOutOfStock(material) ? 'Out of stock' : (isOrderedBefore(material) ? 'Request Again' : 'Request') }}
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <app-pagination *ngIf="result" [page]="result.page" [totalPages]="result.totalPages"
+                  [totalElements]="result.totalElements" [size]="result.size"
+                  (pageChange)="goToPage($event)"></app-pagination>
+</div>
